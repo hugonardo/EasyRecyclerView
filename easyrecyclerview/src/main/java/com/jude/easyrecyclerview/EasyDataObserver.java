@@ -5,18 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 
 public class EasyDataObserver extends RecyclerView.AdapterDataObserver {
-    private EasyRecyclerView recyclerView;
-    private RecyclerArrayAdapter adapter;
+    private final EasyRecyclerView recyclerView;
 
     public EasyDataObserver(EasyRecyclerView recyclerView) {
         this.recyclerView = recyclerView;
-        if (recyclerView.getAdapter() instanceof RecyclerArrayAdapter) {
-            adapter = (RecyclerArrayAdapter) recyclerView.getAdapter();
-        }
     }
 
     private boolean isHeaderFooter(int position) {
-        return adapter != null && (position < adapter.getHeaderCount() || position >= adapter.getHeaderCount() + adapter.getCount());
+        RecyclerArrayAdapter adapter = recyclerView.getAdapter() instanceof RecyclerArrayAdapter
+                ? (RecyclerArrayAdapter) recyclerView.getAdapter()
+                : null;
+        return adapter != null && (position < adapter.getHeaderCount()
+                || position >= adapter.getHeaderCount() + adapter.getCount());
     }
 
     @Override
@@ -55,16 +55,17 @@ public class EasyDataObserver extends RecyclerView.AdapterDataObserver {
         update();//header&footer不会引起changed
     }
 
-
     //自动更改Container的样式
     private void update() {
         int count;
         if (recyclerView.getAdapter() instanceof RecyclerArrayAdapter) {
             RecyclerArrayAdapter adapter = ((RecyclerArrayAdapter) recyclerView.getAdapter());
             // 有Header Footer就不显示Empty,但排除EventFooter。
-            count = adapter.getCount()+adapter.getHeaderCount()+adapter.getFooterCount()-(adapter.hasEventFooter()?1:0);
+            count = adapter.getCount() + adapter.getHeaderCount() + adapter.getFooterCount()
+                    - (adapter.hasEventFooter() ? 1 : 0);
         } else {
-            count = recyclerView.getAdapter().getItemCount();
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+            count = adapter != null ? adapter.getItemCount() : 0;
         }
         if (count == 0) {
             recyclerView.showEmpty();
