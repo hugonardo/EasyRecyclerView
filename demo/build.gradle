@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    compileSdkVersion Integer.parseInt(compile_sdk_version)
+    buildToolsVersion "${build_tools_version}"
 
     defaultConfig {
         applicationId "com.jude.dome"
-        minSdkVersion 15
-        targetSdkVersion 26
+        minSdkVersion Integer.parseInt(min_sdk_version)
+        targetSdkVersion Integer.parseInt(target_sdk_version)
         versionCode 1
         versionName "1.0"
     }
@@ -21,14 +21,13 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:recyclerview-v7:26.0.0'
-    compile 'com.android.support:appcompat-v7:26.0.0'
-    compile 'com.android.support:design:26.0.0'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
-    compile 'jp.wasabeef:glide-transformations:1.3.1'
-    compile 'com.jude:rollviewpager:1.2.9'
-    compile project(':easyrecyclerview')
-    compile 'com.github.clans:fab:1.6.0'
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
+    implementation "com.android.support:design:${android_support_version}"
+    implementation "com.android.support:recyclerview-v7:${android_support_version}"
+    implementation 'com.github.bumptech.glide:glide:3.6.1'
+    implementation 'jp.wasabeef:glide-transformations:1.3.1'
+    implementation 'com.jude:rollviewpager:1.2.9'
+    implementation project(':easyrecyclerview')
+    implementation 'com.github.clans:fab:1.6.0'
 
 }
