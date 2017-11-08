@@ -42,6 +42,7 @@ public class EasyRecyclerView extends FrameLayout {
     private int mProgressId;
     private int mEmptyId;
     private int mErrorId;
+    private final EasyDataObserver mEasyDataObserver = new EasyDataObserver(this);
 
     public EasyRecyclerView(Context context) {
         super(context);
@@ -227,14 +228,32 @@ public class EasyRecyclerView extends FrameLayout {
     }
 
     /**
+     * @return the recycler adapter
+     */
+    @Nullable
+    public RecyclerView.Adapter getAdapter() {
+        return mRecycler.getAdapter();
+    }
+
+    /**
+     * 设置适配器，关闭所有副view。展示recyclerView
+     * 适配器有更新，自动关闭所有副view。根据条数判断是否展示EmptyView
+     *
+     * @param adapter
+     */
+    public void setAdapter(RecyclerView.Adapter adapter) {
+        setupAdapter(adapter);
+        showRecycler();
+    }
+
+    /**
      * 设置适配器，关闭所有副view。展示进度条View
      * 适配器有更新，自动关闭所有副view。根据条数判断是否展示EmptyView
      *
      * @param adapter
      */
     public void setAdapterWithProgress(RecyclerView.Adapter adapter) {
-        mRecycler.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(new EasyDataObserver(this));
+        setupAdapter(adapter);
         //只有Adapter为空时才显示ProgressView
         if (adapter instanceof RecyclerArrayAdapter){
             if (((RecyclerArrayAdapter) adapter).getCount() == 0){
@@ -251,11 +270,20 @@ public class EasyRecyclerView extends FrameLayout {
         }
     }
 
+    private void setupAdapter(RecyclerView.Adapter adapter) {
+        adapter.registerAdapterDataObserver(mEasyDataObserver);
+        mRecycler.setAdapter(adapter);
+    }
+
     /**
      * Remove the adapter from the recycler
      */
     public void clear() {
-        mRecycler.setAdapter(null);
+        RecyclerView.Adapter adapter = mRecycler.getAdapter();
+        if (adapter != null) {
+            adapter.unregisterAdapterDataObserver(mEasyDataObserver);
+            mRecycler.setAdapter(null);
+        }
     }
 
     private void hideAll(){
@@ -411,26 +439,6 @@ public class EasyRecyclerView extends FrameLayout {
      */
     public void removeOnItemTouchListener(RecyclerView.OnItemTouchListener listener) {
         mRecycler.removeOnItemTouchListener(listener);
-    }
-
-    /**
-     * @return the recycler adapter
-     */
-    @Nullable
-    public RecyclerView.Adapter getAdapter() {
-        return mRecycler.getAdapter();
-    }
-
-    /**
-     * 设置适配器，关闭所有副view。展示recyclerView
-     * 适配器有更新，自动关闭所有副view。根据条数判断是否展示EmptyView
-     *
-     * @param adapter
-     */
-    public void setAdapter(RecyclerView.Adapter adapter) {
-        mRecycler.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(new EasyDataObserver(this));
-        showRecycler();
     }
 
     public void setOnTouchListener(OnTouchListener listener) {
